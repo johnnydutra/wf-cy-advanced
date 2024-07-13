@@ -60,6 +60,23 @@ describe('Hacker Stories', () => {
     });
   });
 
+  context('Mocking the API', () => {
+    beforeEach(() => {
+      cy.intercept('GET', `**/search?query=${initialTerm}&page=0`, {
+        fixture: 'stories',
+      }).as('getStories');
+
+      cy.visit('/');
+      cy.wait('@getStories');
+    });
+
+    it('shows one last story after dismissing the first one', () => {
+      cy.get('.button-small').first().click();
+
+      cy.get('.item').should('have.length', 1);
+    });
+  });
+
   it('shows the footer', () => {
     cy.get('footer')
       .should('be.visible')
@@ -73,12 +90,6 @@ describe('Hacker Stories', () => {
     // This is why this test is being skipped.
     // TODO: Find a way to test it out.
     it.skip('shows the right data for all rendered stories', () => {});
-
-    it('shows only nineteen stories after dimissing the first story', () => {
-      cy.get('.button-small').first().click();
-
-      cy.get('.item').should('have.length', 19);
-    });
 
     // Since the API is external,
     // I can't control what it will provide to the frontend,
@@ -151,7 +162,7 @@ describe('Hacker Stories', () => {
   });
 });
 
-context.skip('Errors', () => {
+context('Errors', () => {
   it('shows "Something went wrong ..." in case of a server error', () => {
     cy.intercept('GET', '**/search**', { statusCode: 500 }).as(
       'getServerFailure'
