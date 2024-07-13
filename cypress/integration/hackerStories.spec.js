@@ -108,7 +108,7 @@ describe('Hacker Stories', () => {
       cy.get('#search').type(newTerm);
       cy.contains('Submit').click();
 
-      cy.assertLoadingIsShownAndHidden();
+      cy.wait('@getNewTermStories');
 
       cy.get('.item').should('have.length', 20);
       cy.get('.item').first().should('contain', newTerm);
