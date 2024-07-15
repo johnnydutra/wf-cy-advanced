@@ -45,7 +45,11 @@ describe('Hacker Stories', () => {
 
       cy.wait('@getNewTermStories');
 
+      cy.getLocalStorage('search').should('be.equal', newTerm);
+
       cy.get(`button:contains(${initialTerm})`).should('be.visible').click();
+
+      cy.getLocalStorage('search').should('be.equal', initialTerm);
 
       cy.wait('@getStories');
 
@@ -247,8 +251,11 @@ describe('Hacker Stories', () => {
           );
 
           Cypress._.times(6, () => {
-            cy.get('#search').clear().type(`${faker.random.word()}{enter}`);
+            const randomWord = faker.random.word();
+
+            cy.get('#search').clear().type(`${randomWord}{enter}`);
             cy.wait('@getRandomStories');
+            cy.getLocalStorage('search').should('be.equal', randomWord);
           });
 
           cy.get('.last-searches button')
